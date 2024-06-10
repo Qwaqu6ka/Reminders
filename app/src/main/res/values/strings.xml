@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">FEIPTest</string>
+
+    <string name="try_again">Попробовать ещё</string>
+    <string name="result_renderer_error">Произошла ошибка</string>
+    <string name="cant_load_image">Не удалось загрузить изображеие</string>
+    <string name="list_is_empty">Список пуст</string>
+
+    <string name="reminders">Напоминания</string>
+    <string name="creation_of_reminder">Создание напоминания</string>
+    <string name="client_choosing">Выбор клиента</string>
+    
+    <string name="title">Заголовок</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="client_not_chosen">Клиент не выбран</string>
+    <string name="choose_client">Выбрать клиента</string>
+    <string name="create_reminder">Создать напоминание</string>
+</resources>
