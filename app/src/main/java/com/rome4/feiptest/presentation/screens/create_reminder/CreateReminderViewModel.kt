@@ -1,10 +1,12 @@
 package com.rome4.feiptest.presentation.screens.create_reminder
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rome4.feiptest.data.models.Reminder
 import com.rome4.feiptest.data.repositoies.RemindersRepository
+import com.rome4.feiptest.presentation.ARG_REMINDER_ID
 import com.rome4.feiptest.presentation.models.UIClient
 import com.rome4.feiptest.presentation.models.mapToUI
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -23,13 +25,18 @@ import java.time.LocalTime
 
 class CreateReminderViewModel(
     private val remindersRepository: RemindersRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
         // TODO()
     }
 
-    private var createReminderJob: Job? = null
+    private val reminderId: Int? = savedStateHandle.get<String?>(ARG_REMINDER_ID)?.toInt()
+
+    private var saveReminderJob: Job? = null
+    private var deleteReminderJob: Job? = null
+    private var gerReminderJob: Job? = null
 
     private val _sideEffectFlow = MutableSharedFlow<SideEffect>()
     val sideEffectFlow: SharedFlow<SideEffect> = _sideEffectFlow
@@ -57,8 +64,26 @@ class CreateReminderViewModel(
             title = title,
             client = client,
             date = date,
-            time = time
+            time = time,
+            deleteButtonAvailable = reminderId != null,
         )
+    }
+
+    init {
+        getReminder()
+    }
+
+    private fun getReminder() {
+        if (reminderId != null) {
+            gerReminderJob?.cancel()
+            gerReminderJob = viewModelScope.launch(exceptionHandler) {
+                val reminder = remindersRepository.gerReminderById(reminderId)
+                title.value = reminder.title
+                date.value = reminder.datetime.toLocalDate()
+                time.value = reminder.datetime.toLocalTime()
+                clientId.value = reminder.clientId
+            }
+        }
     }
 
     fun onTitleChange(value: String) {
@@ -77,9 +102,9 @@ class CreateReminderViewModel(
         clientId.value = value
     }
 
-    fun createReminder() {
-        createReminderJob?.cancel()
-        createReminderJob = viewModelScope.launch(exceptionHandler) {
+    fun saveReminder() {
+        saveReminderJob?.cancel()
+        saveReminderJob = viewModelScope.launch(exceptionHandler) {
             val clientId = clientId.value
             val date = date.value
             val time = time.value
@@ -92,13 +117,23 @@ class CreateReminderViewModel(
             } else {
                 LocalDateTime.of(date, LocalTime.of(9, 0))
             }
-            remindersRepository.addReminder(
+            remindersRepository.saveReminder(
                 Reminder(
+                    id = reminderId ?: 0,
                     clientId = clientId,
-                    date = dateTime,
+                    datetime = dateTime,
                     title = title
                 )
             )
+            _sideEffectFlow.emit(SideEffect.NavigateToList)
+        }
+    }
+
+    fun deleteReminder() {
+        if (reminderId == null) return
+        deleteReminderJob?.cancel()
+        deleteReminderJob = viewModelScope.launch(exceptionHandler) {
+            remindersRepository.deleteReminder(reminderId)
             _sideEffectFlow.emit(SideEffect.NavigateToList)
         }
     }
@@ -108,7 +143,8 @@ class CreateReminderViewModel(
         val title: String = "",
         val client: UIClient? = null,
         val date: LocalDate? = null,
-        val time: LocalTime? = null
+        val time: LocalTime? = null,
+        val deleteButtonAvailable: Boolean = false,
     ) {
         val createButtonEnabled: Boolean = title.isNotBlank() && client != null && date != null
     }

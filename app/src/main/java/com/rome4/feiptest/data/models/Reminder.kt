@@ -8,6 +8,6 @@ import java.time.LocalDateTime
 data class Reminder(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
-    val date: LocalDateTime,
+    val datetime: LocalDateTime,
     val clientId: String
 )

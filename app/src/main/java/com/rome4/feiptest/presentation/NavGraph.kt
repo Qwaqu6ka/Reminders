@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.rome4.feiptest.presentation.common_components.observeWithLifecycle
 import com.rome4.feiptest.presentation.screens.choose_client.ChooseClientScreen
 import com.rome4.feiptest.presentation.screens.create_reminder.CreateReminderScreen
@@ -13,7 +14,10 @@ import com.rome4.feiptest.presentation.screens.reminders_list.RemindersListScree
 import org.koin.androidx.compose.koinViewModel
 
 private const val REMINDERS_LIST_SCREEN_ROUTE = "reminders_list_screen"
-private const val CREATE_REMINDER_SCREEN_ROUTE = "create_reminder_screen"
+private const val CREATE_REMINDER_SCREEN_ROOT_ROUTE = "create_reminder_screen"
+const val ARG_REMINDER_ID = "reminder_id"
+private const val CREATE_REMINDER_SCREEN_ROUTE =
+    "$CREATE_REMINDER_SCREEN_ROOT_ROUTE/{$ARG_REMINDER_ID}"
 private const val CHOOSE_CLIENT_SCREEN_ROUTE = "choose_client_screen"
 
 @Composable
@@ -28,13 +32,18 @@ fun NavGraph(modifier: Modifier = Modifier) {
     ) {
         composable(route = REMINDERS_LIST_SCREEN_ROUTE) {
             RemindersListScreen(
-                navigateToCreateReminderScreen = {
-                    navController.navigate(CREATE_REMINDER_SCREEN_ROUTE)
-                }
+                navigateToCreateReminderScreen = { id ->
+                    navController.navigate("$CREATE_REMINDER_SCREEN_ROOT_ROUTE/${id?.apply { toString() }}")
+                },
             )
         }
 
-        composable(route = CREATE_REMINDER_SCREEN_ROUTE) {
+        composable(
+            route = CREATE_REMINDER_SCREEN_ROUTE,
+            arguments = listOf(
+                navArgument(ARG_REMINDER_ID) { nullable = true }
+            )
+        ) {
             val viewModel: CreateReminderViewModel = koinViewModel()
             navController.currentBackStackEntry
                 ?.savedStateHandle
@@ -55,7 +64,6 @@ fun NavGraph(modifier: Modifier = Modifier) {
         }
 
         composable(route = CHOOSE_CLIENT_SCREEN_ROUTE) {
-
             ChooseClientScreen(
                 navigateBackWithClientId = { id ->
                     navController.previousBackStackEntry

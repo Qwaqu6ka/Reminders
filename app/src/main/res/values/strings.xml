@@ -15,5 +15,6 @@
     <string name="time">Время</string>
     <string name="client_not_chosen">Клиент не выбран</string>
     <string name="choose_client">Выбрать клиента</string>
-    <string name="create_reminder">Создать напоминание</string>
+    <string name="create">Создать</string>
+    <string name="delete">Удалить</string>
 </resources>

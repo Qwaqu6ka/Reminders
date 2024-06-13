@@ -19,8 +19,16 @@ class RemindersRepositoryImpl(
         room.remindersDao().getReminders()
     }
 
-    override suspend fun addReminder(reminder: Reminder) = withContext(ioDispatcher) {
+    override suspend fun gerReminderById(id: Int): Reminder = withContext(ioDispatcher) {
+        room.remindersDao().getReminder(id)
+    }
+
+    override suspend fun saveReminder(reminder: Reminder) = withContext(ioDispatcher) {
         room.remindersDao().addReminder(reminder)
+    }
+
+    override suspend fun deleteReminder(id: Int) = withContext(ioDispatcher) {
+        room.remindersDao().deleteReminder(id)
     }
 
     override suspend fun getClients(forceUpdate: Boolean): List<Client> =

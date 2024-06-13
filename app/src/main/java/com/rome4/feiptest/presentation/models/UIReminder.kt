@@ -15,6 +15,6 @@ data class UIReminder(
 fun Reminder.mapToUI() = UIReminder(
     id = id,
     title = title,
-    datetime = date,
+    datetime = datetime,
     clientId = clientId,
 )

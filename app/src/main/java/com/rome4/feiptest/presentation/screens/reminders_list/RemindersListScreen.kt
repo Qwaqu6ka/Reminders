@@ -35,7 +35,7 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun RemindersListScreen(
-    navigateToCreateReminderScreen: () -> Unit,
+    navigateToCreateReminderScreen: (id: Int?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RemindersListViewModel = koinViewModel(),
 ) {
@@ -45,7 +45,7 @@ fun RemindersListScreen(
         modifier = modifier,
         title = stringResource(R.string.reminders),
         fab = {
-            FloatingActionButton(onClick = navigateToCreateReminderScreen) {
+            FloatingActionButton(onClick = { navigateToCreateReminderScreen(null) }) {
                 Icon(Icons.Filled.Add, null)
             }
         },
@@ -69,6 +69,7 @@ fun RemindersListScreen(
                             ReminderCard(
                                 reminder = reminder,
                                 client = clients.first { it.id == reminder.clientId },
+                                onClick = { navigateToCreateReminderScreen(reminder.id) },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
@@ -88,6 +89,7 @@ fun RemindersListScreen(
 @Composable
 private fun ReminderCard(
     reminder: UIReminder,
+    onClick: () -> Unit,
     client: UIClient,
     modifier: Modifier = Modifier
 ) {
@@ -95,7 +97,7 @@ private fun ReminderCard(
         val dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
         reminder.datetime.format(dateTimeFormatter)
     }
-    Surface(modifier = modifier) {
+    Surface(modifier = modifier, onClick = onClick) {
         Row(
             modifier = Modifier.padding(10.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp)

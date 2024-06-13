@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -133,14 +134,29 @@ fun CreateReminderScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Button(
-                onClick = viewModel::createReminder,
+                onClick = viewModel::saveReminder,
                 enabled = state.createButtonEnabled,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.create_reminder),
+                    text = stringResource(R.string.create),
                     style = MaterialTheme.typography.bodyLarge
                 )
+            }
+            if (state.deleteButtonAvailable) {
+                Button(
+                    onClick = viewModel::deleteReminder,
+                    enabled = state.createButtonEnabled,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.delete),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
     }
